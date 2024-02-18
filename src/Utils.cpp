@@ -32,7 +32,7 @@ bool filecmp::isIdentical(const fs::path &f1, const fs::path &f2, int pos, int n
     return true;
 }
 
-bool filecmp::runWithTreads(const fs::path &f1, const fs::path &f2, unsigned int threadsNum)
+bool filecmp::compareBinaryFiles(const fs::path &f1, const fs::path &f2, unsigned int threadsNum)
 {
     const int fileSize = fs::file_size(f1);
     if (fileSize != fs::file_size(f2))
@@ -67,19 +67,22 @@ bool filecmp::runWithTreads(const fs::path &f1, const fs::path &f2, unsigned int
 
 }
 
-fs::path files::generateFile(std::string name, int size, char symbol, bool changeLastChar)
+fs::path files::generateFile(std::string fileName, int fileSize, char initSymbol, bool changeLastChar)
 {
-    fs::path path {name};
+    const int asciiShift = 10;
+    const int asciiSize = 256;
+    fs::path path{fileName};
     std::ofstream ofs(path);
-    for (int i = 0; i < size; ++i)
+
+    for (int i = 0; i < fileSize; ++i)
     {
-        if (changeLastChar && (i == size - 1))
+        if (changeLastChar && (i == fileSize - 1))
         {
-            ofs << char((symbol + i + 10)%256);
+            ofs << char((initSymbol + i + asciiShift)%asciiSize);
         }
         else
         {
-            ofs << char((symbol + i)%256);
+            ofs << char((initSymbol + i)%asciiSize);
         }
     }
 

@@ -37,7 +37,7 @@ void DuplicateFileFinderApp::run(const char* dirPath)
                 continue;
             }
 
-            if (filecmp::runWithTreads(files[i], files[k]))
+            if (filecmp::compareBinaryFiles(files[i], files[k]))
             {
                 markedFiles[k] = true;
                 duplicates[files[i]] += files[k];
