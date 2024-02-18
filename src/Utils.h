@@ -17,5 +17,4 @@ namespace files
     fs::path generateFile(std::string name, int size, char symbol, bool changeLastChar = false);
     void findFilesRecursively(fs::path dirPath, std::vector<fs::path> &files);
     bool verifyPathDirectory(const fs::path &dirPath);
-
 }
