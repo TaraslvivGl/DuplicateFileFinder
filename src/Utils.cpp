@@ -6,10 +6,10 @@
 
 bool filecmp::isIdentical(const fs::path &f1, const fs::path &f2, int pos, int n)
 {
-    const int bufferSize = 1024;
+    const int BufferSize = 1024;
     int readBytes = 0;
-    std::string buffer1(bufferSize, '\0');
-    std::string buffer2(bufferSize, '\0');
+    std::string buffer1(BufferSize, '\0');
+    std::string buffer2(BufferSize, '\0');
 
     std::ifstream ifs1(f1, std::ios::binary);
     std::ifstream ifs2(f2, std::ios::binary);
@@ -19,14 +19,14 @@ bool filecmp::isIdentical(const fs::path &f1, const fs::path &f2, int pos, int n
 
     while (readBytes < n)
     {
-        const int readSize = std::min(bufferSize, n - readBytes);
-        ifs1.read(buffer1.data(), readSize);
-        ifs2.read(buffer2.data(), readSize);
-        readBytes += ifs1.gcount();
+        const int ReadSize = std::min(BufferSize, n - readBytes);
+        ifs1.read(buffer1.data(), ReadSize);
+        ifs2.read(buffer2.data(), ReadSize);
         if (buffer1 != buffer2)
         {
             return false;
         }
+        readBytes += ifs1.gcount();
     }
 
     return true;
@@ -34,8 +34,8 @@ bool filecmp::isIdentical(const fs::path &f1, const fs::path &f2, int pos, int n
 
 bool filecmp::compareBinaryFiles(const fs::path &f1, const fs::path &f2, unsigned int threadsNum)
 {
-    const int fileSize = fs::file_size(f1);
-    if (fileSize != fs::file_size(f2))
+    const int FileSize = fs::file_size(f1);
+    if (FileSize != fs::file_size(f2))
     {
         return false;
     }
@@ -46,31 +46,38 @@ bool filecmp::compareBinaryFiles(const fs::path &f1, const fs::path &f2, unsigne
         threadsNum = preferableThreadNum <= 0 ? 1 : preferableThreadNum;
     }
 
-    if (fileSize < threadsNum)
+    if (FileSize < threadsNum)
     {
-        return isIdentical(f1, f2, 0, fileSize);
+        return isIdentical(f1, f2, 0, FileSize);
     }
     else
     {
         std::vector<std::shared_future<bool>> result(threadsNum);
-        const int Chunk = fileSize / threadsNum;
+        const int Chunk = FileSize / threadsNum;
         int seek = 0;
         for (int i = 0; i < threadsNum; ++i)
         {
-            const int readSize = i == threadsNum-1 ? fileSize - seek : Chunk;
+            const int readSize = i == threadsNum-1 ? FileSize - seek : Chunk;
             result[i] = async(std::launch::async, isIdentical, f1, f2, seek, readSize);
             seek += Chunk;
         }
-        return std::accumulate(result.begin(), result.end(), true,
-                               [](bool acc, std::shared_future<bool> el) { return acc && el.get();});
+
+        for (const auto& el : result)
+        {
+            if (!el.get())
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
 
 fs::path files::generateFile(std::string fileName, int fileSize, char initSymbol, bool changeLastChar)
 {
-    const int asciiShift = 10;
-    const int asciiSize = 256;
+    const int AsciiShift = 10;
+    const int AsciiSize = 256;
     fs::path path{fileName};
     std::ofstream ofs(path);
 
@@ -78,18 +85,18 @@ fs::path files::generateFile(std::string fileName, int fileSize, char initSymbol
     {
         if (changeLastChar && (i == fileSize - 1))
         {
-            ofs << char((initSymbol + i + asciiShift)%asciiSize);
+            ofs << char((initSymbol + i + AsciiShift)%AsciiSize);
         }
         else
         {
-            ofs << char((initSymbol + i)%asciiSize);
+            ofs << char((initSymbol + i)%AsciiSize);
         }
     }
 
     return path;
 }
 
-void files::findFilesRecursively(fs::path dirPath, std::vector<fs::path> &files)
+void files::findFilesRecursively(const fs::path& dirPath, std::vector<fs::path> &files)
 {
     for (const auto& path : fs::recursive_directory_iterator(dirPath))
     {

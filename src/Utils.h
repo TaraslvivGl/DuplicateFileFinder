@@ -32,7 +32,7 @@ namespace filecmp
 namespace files
 {
     /**
-     * @brief generateFile - generates file with a set of parameters
+     * @brief generateFile - helper function to generate file with a set of parameters
      * @param fileName - file name
      * @param fileSize - file size
      * @param initSymbol - initial character. The next characters are shifted to 10
@@ -46,7 +46,7 @@ namespace files
      * @param dirPath - starting point for recursive search
      * @param [out]files - found files
      */
-    void findFilesRecursively(fs::path dirPath, std::vector<fs::path> &files);
+    void findFilesRecursively(const fs::path& dirPath, std::vector<fs::path> &files);
 
     /**
      * @brief verifyPathDirectory - verify passed path to the directory

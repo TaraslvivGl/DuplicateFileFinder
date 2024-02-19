@@ -7,7 +7,6 @@
 
 void DuplicateFileFinderApp::run(const char* dirPath)
 {
-    // @todo: add try catch or add it to the main
     files::verifyPathDirectory(dirPath);
 
     std::vector<fs::path> files;
@@ -60,6 +59,7 @@ void DuplicateFileFinderApp::printResults(const std::map<std::string, std::strin
         return;
     }
 
+    std::cout << "Found duplicates:" << std::endl;
     for (const auto& [key, value] : duplicates)
     {
         std::cout << key << "; " << value << std::endl;
