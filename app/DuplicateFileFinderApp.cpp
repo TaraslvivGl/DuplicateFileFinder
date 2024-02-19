@@ -39,8 +39,8 @@ void DuplicateFileFinderApp::run(const char* dirPath)
             if (filecmp::compareBinaryFiles(files[i], files[k]))
             {
                 markedFiles[k] = true;
-                duplicates[files[i]] += files[k];
-                duplicates[files[i]].append("; ");
+                duplicates[files[i].string()] += files[k].string();
+                duplicates[files[i].string()].append("; ");
             }
         }
     }
@@ -68,12 +68,13 @@ void DuplicateFileFinderApp::printResults(const std::map<std::string, std::strin
 
 void DuplicateFileFinderApp::showProgress()
 {
-    const std::array<std::string, 4> progressStr = {"Searching", "Searching.", "Searching..", "Searching..."};
-    auto printProgress = [this, progressStr] () {
+    const int ProgressStringNum = 4;
+    std::string progressStr[ProgressStringNum] = {"Searching", "Searching.", "Searching..", "Searching..."};
+    auto printProgress = [this, progressStr, ProgressStringNum] () {
         int i = 0;
         while (m_showProgress)
         {
-            std::cout << progressStr[i++%progressStr.size()] << std::flush;
+            std::cout << progressStr[i++%ProgressStringNum] << std::flush;
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             std::cout << "\r";
         }

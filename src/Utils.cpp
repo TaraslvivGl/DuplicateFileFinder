@@ -111,13 +111,13 @@ bool files::verifyPathDirectory(const fs::path &dirPath)
 {
     if (!fs::exists(dirPath))
     {
-        throw std::invalid_argument(std::string(dirPath) + " directory does't exist");
+        throw std::invalid_argument(dirPath.string() + " directory does't exist");
         return false;
     }
 
     if (!fs::is_directory(dirPath))
     {
-        throw std::invalid_argument(std::string(dirPath) + " is not a directory");
+        throw std::invalid_argument(dirPath.string() + " is not a directory");
         return false;
     }
 
