@@ -34,8 +34,8 @@ bool filecmp::isIdentical(const fs::path &f1, const fs::path &f2, int pos, int n
 
 bool filecmp::compareBinaryFiles(const fs::path &f1, const fs::path &f2, unsigned int threadsNum)
 {
-    const int FileSize = fs::file_size(f1);
-    if (FileSize != fs::file_size(f2))
+    const unsigned int FileSize = fs::file_size(f1);
+    if (static_cast<unsigned long>(FileSize) != fs::file_size(f2))
     {
         return false;
     }
@@ -55,7 +55,7 @@ bool filecmp::compareBinaryFiles(const fs::path &f1, const fs::path &f2, unsigne
         std::vector<std::shared_future<bool>> result(threadsNum);
         const int Chunk = FileSize / threadsNum;
         int seek = 0;
-        for (int i = 0; i < threadsNum; ++i)
+        for (unsigned int i = 0; i < threadsNum; ++i)
         {
             const int readSize = i == threadsNum-1 ? FileSize - seek : Chunk;
             result[i] = async(std::launch::async, isIdentical, f1, f2, seek, readSize);
